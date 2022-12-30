@@ -11,11 +11,9 @@ Resources:
         - sg-074fcfbff1ffe1ccd
       UserData: !Base64 |
         #!/bin/bash -ex
-        echo "Hello"
-        echo "file" > file.log
-        
+        # echo "Hello"
       Tags:
         - Key: app
           Value: test
         - Key: user
-          Value: ab
+          Value: abc
