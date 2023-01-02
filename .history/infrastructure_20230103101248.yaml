@@ -15,12 +15,11 @@ Resources:
         set -x
         cd /home/ec2-user
         echo "hello" > /home/ec2-user/test.txt
-        yum update -y
-        yum install -y ruby wget
+        sudo yum update -y
+        sudo yum install -y ruby wget
         wget https://aws-codedeploy-ap-southeast-2.s3.ap-southeast-2.amazonaws.com/latest/install
         chmod +x ./install
-        ./install auto
-        
+        sudo ./install auto
       Tags:
         - Key: app
           Value: test

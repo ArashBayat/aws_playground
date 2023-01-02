@@ -20,7 +20,6 @@ Resources:
         wget https://aws-codedeploy-ap-southeast-2.s3.ap-southeast-2.amazonaws.com/latest/install
         chmod +x ./install
         ./install auto
-        
       Tags:
         - Key: app
           Value: test
