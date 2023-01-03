@@ -1,6 +1,15 @@
 AWSTemplateFormatVersion: "2010-09-09"
 
 Resources:
+
+  MyInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties: 
+      InstanceProfileName: my-instance-profile
+      Path: /
+      Roles: 
+       - WebServerRole
+
   myEC2Instance:
     Type: AWS::EC2::Instance
     Properties:
@@ -9,14 +18,19 @@ Resources:
       InstanceType: t2.nano
       SecurityGroupIds:
         - sg-074fcfbff1ffe1ccd
+      IamInstanceProfile: !Ref MyInstanceProfile
       UserData: !Base64 |
-        #!/bin/bash -ex
-        cat 'hello' > /home/ec2-user/test.txt
-        sudo yum update -y
-        sudo yum install -y ruby wget
+        #!/bin/bash
+
+        set -x
+        cd /home/ec2-user
+        echo "hello" > /home/ec2-user/test.txt
+        yum update -y
+        yum install -y ruby wget
         wget https://aws-codedeploy-ap-southeast-2.s3.ap-southeast-2.amazonaws.com/latest/install
         chmod +x ./install
-        sudo ./install auto
+        ./install auto
+
       Tags:
         - Key: app
           Value: test

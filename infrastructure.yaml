@@ -8,7 +8,7 @@ Resources:
       InstanceProfileName: my-instance-profile
       Path: /
       Roles: 
-       - !Ref WebServerRole
+       - WebServerRole
 
   myEC2Instance:
     Type: AWS::EC2::Instance
