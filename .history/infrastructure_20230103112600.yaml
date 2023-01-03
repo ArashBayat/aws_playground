@@ -18,7 +18,6 @@ Resources:
       InstanceType: t2.nano
       SecurityGroupIds:
         - sg-074fcfbff1ffe1ccd
-      IamInstanceProfile: !Ref MyInstanceProfile
       UserData: !Base64 |
         #!/bin/bash
 
