@@ -15,7 +15,8 @@ Resources:
     Properties:
       LaunchTemplateName: MyLaunchTemplate
       LaunchTemplateData:
-        IamInstanceProfile: !Ref MyInstanceProfile
+        IamInstanceProfile: 
+          Arn: !Ref MyInstanceProfile
         ImageId: ami-051a81c2bd3e755db
         InstanceType: t2.nano
         KeyName: TestAws
