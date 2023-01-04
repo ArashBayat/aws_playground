@@ -38,7 +38,7 @@ Resources:
     Type: AWS::EC2::Instance
     Properties: 
       LaunchTemplate:
-        LaunchTemplateName: MyLaunchTemplate
+        LaunchTemplateId: !Ref MyLaunchTemplate
         Version: 1
       Tags:
         - Key: app
