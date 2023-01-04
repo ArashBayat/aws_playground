@@ -1,0 +1,76 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+
+Resources:
+  AppPipeline:
+    Type: 'AWS::CodePipeline::Pipeline'
+    Properties:
+      Name: MyCICD
+      RoleArn: arn:aws:iam::993035750467:role/service-role/AWSCodePipelineServiceRole-ap-southeast-2-AWS-Playground
+      Stages:
+        - Name: Source
+          Actions:
+            - Name: SourceAction
+              ActionTypeId:
+                Category: Source
+                Owner: AWS
+                Version: 1
+                Provider: CodeStarSourceConnection
+              OutputArtifacts:
+                - Name: SourceOutput
+              Configuration:
+                ConnectionArn: arn:aws:codestar-connections:ap-southeast-2:993035750467:connection/281e28be-d269-4994-9df9-061095a46f27
+                BranchName: main
+                FullRepositoryId: ArashBayat/aws_playground
+                DetectChanges: true
+                OutputArtifactFormat: CODE_ZIP
+              RunOrder: 1
+        - Name: ChangeSet
+          Actions:
+            - Name: Deploy-ChangeSet
+              InputArtifacts:
+                - Name: SourceOutput
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Version: 1
+                Provider: CloudFormation
+              Configuration:
+                ActionMode:  CHANGE_SET_REPLACE
+                ChangeSetName: mychangeset
+                RoleArn: arn:aws:iam::993035750467:role/AWSCloudFormationServiceRole
+                Capabilities: CAPABILITY_NAMED_IAM
+                StackName: UnderCICD
+                TemplatePath: infrastructure.yaml
+                TemplateConfiguration: param-infra.json
+        - Name: ExecChange
+          Actions:
+            - Name: ExecChangeset
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Version: 1
+                Provider: CloudFormation
+              Configuration:
+                ActionMode: CHANGE_SET_EXECUTE
+                ChangeSetName: mychangeset
+                StackName: UnderCICD
+              RunOrder: 1
+        # - Name: Beta
+        #   Actions:
+        #     - Name: BetaAction
+        #       InputArtifacts:
+        #         - Name: SourceOutput
+        #       ActionTypeId:
+        #         Category: Deploy
+        #         Owner: AWS
+        #         Version: 1
+        #         Provider: CodeDeploy
+        #       Configuration:
+        #         ApplicationName: !Ref ApplicationName
+        #         DeploymentGroupName: !Ref BetaFleet
+        #       RunOrder: 1
+      ArtifactStore:
+        Type: S3
+        Location: testrev01
+  

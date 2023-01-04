@@ -39,7 +39,7 @@ Resources:
     Properties: 
       LaunchTemplate:
         LaunchTemplateName: MyLaunchTemplate
-        Version: v1
+        Version: 1
       Tags:
         - Key: app
           Value: test
