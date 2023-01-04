@@ -4,9 +4,22 @@ AWSTemplateFormatVersion: "2010-09-09"
 Resources:
 
   CodeDeployApplication: 
-  Type: AWS::CodeDeploy::Application 
-  Properties:
-    ComputePlatform: Server
+    Type: AWS::CodeDeploy::Application 
+    Properties:
+      ApplicationName: MyApp
+      ComputePlatform: Server
+
+  DeploymentGroup: 
+    Type: AWS::CodeDeploy::DeploymentGroup 
+    Properties:
+      ApplicationName: !Ref CodeDeployApplication
+      DeploymentGroupName: MyTaggedEc2
+      Ec2TagFilters: 
+        - Key: app 
+          Value: test 
+          Type: "KEY_AND_VALUE" 
+      ServiceRoleArn: arn:aws:iam::993035750467:role/CodeDeployEc2ServiceRole
+
 
   AppPipeline:
     Type: 'AWS::CodePipeline::Pipeline'
@@ -47,8 +60,8 @@ Resources:
                 RoleArn: arn:aws:iam::993035750467:role/AWSCloudFormationServiceRole
                 Capabilities: CAPABILITY_NAMED_IAM
                 StackName: UnderCICD
-                TemplatePath: infrastructure.yaml
-                TemplateConfiguration: param-infra.json
+                TemplatePath: SourceOutput::infrastructure.yaml
+                TemplateConfiguration: SourceOutput::param-infra.json
         - Name: ExecChange
           Actions:
             - Name: ExecChangeset
@@ -62,20 +75,20 @@ Resources:
                 ChangeSetName: mychangeset
                 StackName: UnderCICD
               RunOrder: 1
-        # - Name: Beta
-        #   Actions:
-        #     - Name: BetaAction
-        #       InputArtifacts:
-        #         - Name: SourceOutput
-        #       ActionTypeId:
-        #         Category: Deploy
-        #         Owner: AWS
-        #         Version: 1
-        #         Provider: CodeDeploy
-        #       Configuration:
-        #         ApplicationName: !Ref ApplicationName
-        #         DeploymentGroupName: !Ref BetaFleet
-        #       RunOrder: 1
+        - Name: DeployApp
+          Actions:
+            - Name: BetaAction
+              InputArtifacts:
+                - Name: SourceOutput
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Version: 1
+                Provider: CodeDeploy
+              Configuration:
+                ApplicationName: !Ref CodeDeployApplication
+                DeploymentGroupName: !Ref DeploymentGroup
+              RunOrder: 1
       ArtifactStore:
         Type: S3
         Location: testrev01
